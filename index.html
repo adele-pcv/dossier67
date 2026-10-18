@@ -1,0 +1,112 @@
+
+<!doctype HTML>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        #interface {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            left: 5%;
+            width: 90%;
+            z-index: 999;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+
+        #video-suspect {
+            width: 100%;
+            max-height: 35vh;
+        }
+
+        .question {
+            display: block;
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+
+    <div id="interface">
+        <video id="video-suspect"
+               controls
+               playsinline
+               muted
+               preload="auto">
+            <source src="./videos/suspect1-intro.mp4" type="video/mp4">
+        </video>
+
+        <button class="question" data-video="./videos/suspect1-choix1.mp4">
+            Choix 1
+        </button>
+
+        <button class="question" data-video="./videos/suspect1-choix2.mp4">
+            Choix 2
+        </button>
+
+        <button class="question" data-video="./videos/suspect1-choix3.mp4">
+            Choix 3
+        </button>
+    </div>
+
+    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
+
+        <a-marker id="suspect"
+                  type="pattern"
+                  preset="pattern"
+                  url="./assets/markers/pattern-suspect1.patt">
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        const marqueur = document.querySelector("#suspect");
+        const interfaceSuspect = document.querySelector("#interface");
+        const video = document.querySelector("#video-suspect");
+
+        // Détection du marqueur : afficher l'interface et lancer la vidéo
+        marqueur.addEventListener("markerFound", function () {
+            interfaceSuspect.style.display = "block";
+
+            video.muted = true;
+            video.currentTime = 0;
+
+            video.play().catch(function (erreur) {
+                console.log("Lecture automatique bloquée :", erreur);
+            });
+        });
+
+        // Marqueur perdu : fermer l'interface et arrêter la vidéo
+        marqueur.addEventListener("markerLost", function () {
+            interfaceSuspect.style.display = "none";
+            video.pause();
+        });
+
+        // Cliquer sur une question pour lancer la réponse correspondante
+        document.querySelectorAll(".question").forEach(function (bouton) {
+            bouton.addEventListener("click", function () {
+                video.pause();
+                video.src = bouton.dataset.video;
+                video.load();
+
+                video.play().catch(function (erreur) {
+                    console.log("Lecture impossible :", erreur);
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
