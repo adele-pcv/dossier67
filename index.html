@@ -76,7 +76,6 @@
         const interfaceSuspect = document.querySelector("#interface");
         const video = document.querySelector("#video-suspect");
 
-        // Détection du marqueur : afficher l'interface et lancer la vidéo
         marqueur.addEventListener("markerFound", function () {
             interfaceSuspect.style.display = "block";
 
@@ -88,13 +87,11 @@
             });
         });
 
-        // Marqueur perdu : fermer l'interface et arrêter la vidéo
         marqueur.addEventListener("markerLost", function () {
             interfaceSuspect.style.display = "none";
             video.pause();
         });
 
-        // Cliquer sur une question pour lancer la réponse correspondante
         document.querySelectorAll(".question").forEach(function (bouton) {
             bouton.addEventListener("click", function () {
                 video.pause();
